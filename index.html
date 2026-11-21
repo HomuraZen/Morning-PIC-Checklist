@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Morning PIC">
+<title>Morning PIC Checklist</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Layout: single mobile column, same visual system as the Staff Positioning tool */
+  :root{
+    --bg:#f6f3ee; --card:#ffffff; --ink:#1f1b16; --muted:#7a7166; --line:#e6dfd4;
+    --brand:#3b2f25; --accent:#b9773a; --ok:#2f7d4f; --warn:#c0392b; --chip:#efe8dd; --wa:#1fa855; --onbrand:#f6f3ee;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --bg:#16130f; --card:#211c17; --ink:#f3ede4; --muted:#a59a8c; --line:#352d25;
+      --brand:#f3ede4; --accent:#d9944f; --chip:#2c251e; --ok:#55b07c; --warn:#e5675a; --wa:#1fa855; --onbrand:#16130f; color-scheme:dark; }
+  }
+  :root[data-theme="dark"]{ --bg:#16130f; --card:#211c17; --ink:#f3ede4; --muted:#a59a8c; --line:#352d25;
+      --brand:#f3ede4; --accent:#d9944f; --chip:#2c251e; --ok:#55b07c; --warn:#e5675a; --wa:#1fa855; --onbrand:#16130f; color-scheme:dark; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:560px;margin:0 auto;padding-block:16px 120px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 2px 14px}
+  header h1{font-size:18px;margin:0;letter-spacing:.2px;text-wrap:balance}
+  header .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .iconbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:8px 10px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:0 0 10px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+  .card h2 .prog{font-variant-numeric:tabular-nums;letter-spacing:0;text-transform:none;font-size:13px;color:var(--ink)}
+  label.f{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+  input[type=date],input[type=text],input[type=number],select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 11px;appearance:none;-webkit-appearance:none}
+  select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .bar-track{height:6px;background:var(--chip);border-radius:99px;overflow:hidden;margin-bottom:6px}
+  .bar-fill{height:100%;background:var(--ok);width:0;transition:width .2s}
+  .item{border-top:1px solid var(--line);padding:10px 0}
+  .item:first-of-type{border-top:0}
+  .tick{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;width:100%;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+  .box{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;font-size:15px;font-weight:700;color:transparent;transition:all .12s}
+  .item.done .box{background:var(--ok);border-color:var(--ok);color:#fff}
+  .item.done .txt{color:var(--muted)}
+  .txt{font-weight:500;font-size:14.5px;line-height:1.35}
+  .extra{margin:8px 0 0 38px;display:grid;gap:6px}
+  .extra .hint{font-size:12px;color:var(--muted)}
+  .extra .hint.bad{color:var(--warn);font-weight:600}
+  .extra .hint.good{color:var(--ok);font-weight:600}
+  .rm{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:8px}
+  .rm span{font-weight:600;color:var(--muted)}
+  .reason{border-color:var(--warn)!important}
+  .item.missing .reason{background:color-mix(in srgb, var(--warn) 8%, var(--bg))}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to top,var(--bg) 70%,transparent);padding-top:14px;padding-bottom:calc(14px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+  .bar .in{max-width:560px;margin:0 auto;display:flex;gap:8px}
+  .btn{flex:1;border:0;border-radius:12px;padding:14px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn.primary{background:var(--brand);color:var(--onbrand)}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line);flex:0 0 auto;padding:14px 16px}
+  .btn.wa{background:var(--wa);color:#fff}
+  .btn:focus-visible,.tick:focus-visible,.iconbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  pre.msg{white-space:pre-wrap;font-family:inherit;font-size:14px;line-height:1.5;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;user-select:text;-webkit-user-select:text}
+  .hide{display:none!important}
+  .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1}
+  .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+  textarea{min-height:200px;resize:vertical;line-height:1.5}
+  textarea#remarks{min-height:70px}
+  .err{color:var(--warn);font-size:13px;margin-top:8px}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- FORM -->
+  <section id="vForm">
+    <header>
+      <div>
+        <h1>Morning PIC Checklist</h1>
+        <div class="sub">A'REST Café · Damansara Uptown</div>
+      </div>
+      <button class="iconbtn" id="openSettings">⚙ Settings</button>
+    </header>
+
+    <div class="card">
+      <div class="row2">
+        <div>
+          <label class="f" for="date">Date</label>
+          <input type="date" id="date">
+        </div>
+        <div>
+          <label class="f" for="pic">PIC</label>
+          <select id="pic"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span>Opening checks</span><span class="prog" id="prog">0/0</span></h2>
+      <div class="bar-track"><div class="bar-fill" id="fill"></div></div>
+      <div id="list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Remarks (optional)</h2>
+      <textarea id="remarks" placeholder="Anything the manager should know, e.g. 2 staff late, chiller noisy"></textarea>
+    </div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section id="vPreview" class="hide">
+    <header>
+      <div>
+        <h1>Ready to send</h1>
+        <div class="sub">Send to the WhatsApp group</div>
+      </div>
+    </header>
+    <div class="card"><pre class="msg" id="msg"></pre></div>
+    <div class="note">If Copy doesn't work on this phone, long-press the text above and copy it manually.</div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="vSettings" class="hide">
+    <header>
+      <div>
+        <h1>Settings</h1>
+        <div class="sub">Saved on this device</div>
+      </div>
+    </header>
+    <div class="card">
+      <h2>Checklist items (one per line, in order)</h2>
+      <textarea id="setItems"></textarea>
+      <div class="note">Start a line with <b>$</b> to add a "counted amount" box to that item, e.g. <i>$ Counter cash RM388</i>.</div>
+    </div>
+    <div class="card">
+      <h2>Opening float (RM)</h2>
+      <input type="number" id="setFloat" inputmode="decimal">
+      <div class="note">The counted cash is checked against this amount.</div>
+    </div>
+    <div class="card">
+      <h2>PIC list (one per line)</h2>
+      <textarea id="setPics" style="min-height:120px"></textarea>
+      <div class="err hide" id="setErr"></div>
+    </div>
+    <button class="iconbtn" id="resetDefaults">Restore default lists</button>
+  </section>
+</div>
+
+<div class="bar" id="barForm"><div class="in">
+  <button class="btn ghost" id="clearBtn">Clear</button>
+  <button class="btn primary" id="submitBtn">Submit</button>
+</div></div>
+<div class="bar hide" id="barPreview"><div class="in">
+  <button class="btn ghost" id="editBtn">Edit</button>
+  <button class="btn primary" id="copyBtn">📋 Copy</button>
+  <a class="btn wa" id="waBtn" href="#" target="_blank" rel="noopener">WhatsApp</a>
+</div></div>
+<div class="bar hide" id="barSettings"><div class="in">
+  <button class="btn ghost" id="cancelSettings">Cancel</button>
+  <button class="btn primary" id="saveSettings">Save</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const DEFAULT_ITEMS = [
+    "POS system menu checked",
+    "Grab / Foodpanda / ShopeeFood menu checked",
+    "FOH morning checklist done & staff arranged",
+    "Kitchen morning checklist status checked",
+    "Table setup correct: stand, 2-hour card & QR in position",
+    "All lights on, full brightness",
+    "$ Counter cash RM388",
+    "POS counter opened with RM388 (not 0)",
+    "Reservations arranged",
+    "Earphones passed to all staff"
+  ];
+  const DEFAULT_PICS = ["Ameer","Moses","Susu","Rachel"];
+  const DEFAULT_FLOAT = 388;
+  const KEY_CFG = "arest-morningpic-cfg-v1";
+  const KEY_DRAFT = "arest-morningpic-draft-v1";
+
+  function load(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+  function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+  let cfg = load(KEY_CFG) || {};
+  if(!Array.isArray(cfg.items) || !cfg.items.length) cfg.items = DEFAULT_ITEMS.slice();
+  if(!Array.isArray(cfg.pics) || !cfg.pics.length) cfg.pics = DEFAULT_PICS.slice();
+  if(typeof cfg.float !== "number") cfg.float = DEFAULT_FLOAT;
+
+  const parse = line => line.startsWith("$") ? { text: line.replace(/^\$\s*/,""), cash: true } : { text: line, cash: false };
+  let items = cfg.items.map(parse);
+
+  function today(){ const d=new Date(), z=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate()); }
+  function fresh(){ return { date: today(), pic: "", done: items.map(()=>false), reason: items.map(()=>""), amount: items.map(()=>""), remarks: "" }; }
+
+  let state = load(KEY_DRAFT);
+  // A draft from an earlier day is discarded so yesterday's ticks never carry over
+  if(!state || state.date !== today() || !Array.isArray(state.done) || state.done.length !== items.length) state = fresh();
+  if(state.pic && !cfg.pics.includes(state.pic)) state.pic = "";
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const persist = () => save(KEY_DRAFT, state);
+  const money = n => "RM" + (Math.round(n*100)/100).toString();
+
+  function cashHint(i){
+    const v = state.amount[i];
+    if(v === "" || isNaN(+v)) return { cls:"", text:`Expected ${money(cfg.float)}` };
+    const diff = +v - cfg.float;
+    if(Math.abs(diff) < 0.005) return { cls:"good", text:"Matches float ✓" };
+    return { cls:"bad", text: diff < 0 ? `Short ${money(-diff)}` : `Over ${money(diff)}` };
+  }
+
+  function render(){
+    $("date").value = state.date;
+    $("pic").innerHTML = '<option value="">— Select PIC —</option>' + cfg.pics.map(s => `<option ${s===state.pic?"selected":""}>${esc(s)}</option>`).join("");
+    $("remarks").value = state.remarks;
+    const list = $("list"); list.innerHTML = "";
+    items.forEach((it, i) => {
+      const done = state.done[i];
+      const row = document.createElement("div");
+      row.className = "item" + (done ? " done" : "");
+      row.dataset.i = i;
+      let extra = "";
+      if(it.cash){
+        const h = cashHint(i);
+        extra += `<div class="rm"><span>RM</span><input type="number" inputmode="decimal" id="amt${i}" data-amt="${i}" placeholder="Counted amount" value="${esc(state.amount[i])}"></div><div class="hint ${h.cls}" id="hint${i}">${h.text}</div>`;
+      }
+      if(!done){
+        extra += `<input type="text" class="reason" id="rsn${i}" data-rsn="${i}" placeholder="Not done? Write the reason" value="${esc(state.reason[i])}">`;
+      }
+      row.innerHTML = `<button class="tick" data-tick="${i}" aria-pressed="${done}"><span class="box">✓</span><span class="txt">${i+1}. ${esc(it.text)}</span></button>` + (extra ? `<div class="extra">${extra}</div>` : "");
+      list.appendChild(row);
+    });
+    updateProgress();
+  }
+
+  function updateProgress(){
+    const n = state.done.filter(Boolean).length;
+    $("prog").textContent = `${n}/${items.length} done`;
+    $("fill").style.width = (items.length ? n/items.length*100 : 0) + "%";
+  }
+
+  function fmtDate(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    return new Date(y,m-1,d).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short",year:"numeric"}).replace(/^(\w+)\s/,"$1, ");
+  }
+  function nowTime(){ return new Date().toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"}); }
+
+  function buildMessage(){
+    const lines = items.map((it,i) => {
+      let s = `${state.done[i] ? "✅" : "❌"} ${i+1}. ${it.text}`;
+      if(it.cash && state.amount[i] !== ""){
+        const h = cashHint(i);
+        s += ` (counted ${money(+state.amount[i])}${h.cls==="bad" ? ", ⚠️ " + h.text : ""})`;
+      }
+      if(!state.done[i]) s += `\n     ↳ Reason: ${state.reason[i].trim()}`;
+      return s;
+    });
+    const n = state.done.filter(Boolean).length;
+    let out = `*☀️ A'REST UPTOWN | MORNING PIC CHECKLIST*\n🗓 ${fmtDate(state.date)} | ⏰ Sent ${nowTime()}\n👤 PIC: ${state.pic}\n\n` + lines.join("\n") + "\n";
+    out += n === items.length ? `\n✅ All ${n} checks done` : `\n📊 Done ${n}/${items.length} | ⚠️ Not done: ${items.length - n}`;
+    if(state.remarks.trim()) out += `\n📝 Remarks: ${state.remarks.trim()}`;
+    return out;
+  }
+
+  function show(v){
+    ["Form","Preview","Settings"].forEach(x => { $("v"+x).classList.toggle("hide", x!==v); $("bar"+x).classList.toggle("hide", x!==v); });
+    window.scrollTo(0,0);
+  }
+  function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("show"),2200); }
+
+  // ---- form events ----
+  $("date").addEventListener("change", e => { state.date = e.target.value; persist(); });
+  $("pic").addEventListener("change", e => { state.pic = e.target.value; persist(); });
+  $("remarks").addEventListener("input", e => { state.remarks = e.target.value; persist(); });
+  $("list").addEventListener("click", e => {
+    const b = e.target.closest("[data-tick]"); if(!b) return;
+    const i = +b.dataset.tick; state.done[i] = !state.done[i]; persist(); render();
+  });
+  $("list").addEventListener("input", e => {
+    const t = e.target;
+    if(t.dataset.rsn !== undefined){ state.reason[+t.dataset.rsn] = t.value; persist(); }
+    if(t.dataset.amt !== undefined){
+      const i = +t.dataset.amt; state.amount[i] = t.value; persist();
+      const h = cashHint(i), el = $("hint"+i); el.className = "hint " + h.cls; el.textContent = h.text;
+    }
+  });
+
+  $("clearBtn").addEventListener("click", () => {
+    const b = $("clearBtn");
+    if(b.dataset.armed){
+      const pic = state.pic; state = fresh(); state.pic = pic; persist(); render();
+      delete b.dataset.armed; b.textContent = "Clear"; toast("Cleared");
+    } else {
+      b.dataset.armed = "1"; b.textContent = "Tap again";
+      setTimeout(()=>{ delete b.dataset.armed; b.textContent="Clear"; }, 2500);
+    }
+  });
+
+  $("submitBtn").addEventListener("click", () => {
+    if(!state.pic){ toast("Select the PIC first"); $("pic").focus(); return; }
+    if(!state.date){ toast("Select a date"); return; }
+    for(let i=0;i<items.length;i++){
+      if(items[i].cash && state.done[i] && (state.amount[i] === "" || isNaN(+state.amount[i]))){
+        toast(`Item ${i+1}: key in the counted amount`); const el=$("amt"+i); if(el){ el.focus(); el.scrollIntoView({block:"center"}); } return;
+      }
+      if(!state.done[i] && !state.reason[i].trim()){
+        toast(`Item ${i+1} not ticked: write the reason`); const el=$("rsn"+i); if(el){ el.focus(); el.scrollIntoView({block:"center"}); } return;
+      }
+    }
+    const msg = buildMessage();
+    $("msg").textContent = msg;
+    $("waBtn").href = "https://wa.me/?text=" + encodeURIComponent(msg);
+    show("Preview");
+  });
+
+  // ---- preview events ----
+  $("editBtn").addEventListener("click", () => show("Form"));
+  $("copyBtn").addEventListener("click", async () => {
+    const text = $("msg").textContent;
+    try{ await navigator.clipboard.writeText(text); toast("Copied. Paste in WhatsApp"); }
+    catch(err){
+      try{
+        const r=document.createRange(); r.selectNodeContents($("msg")); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        const ok = document.execCommand && document.execCommand("copy");
+        toast(ok ? "Copied. Paste in WhatsApp" : "Text selected. Tap Copy");
+      }catch(e2){ toast("Long-press the text to copy"); }
+    }
+  });
+
+  // ---- settings ----
+  $("openSettings").addEventListener("click", () => {
+    $("setItems").value = cfg.items.join("\n");
+    $("setPics").value = cfg.pics.join("\n");
+    $("setFloat").value = cfg.float;
+    $("setErr").classList.add("hide");
+    show("Settings");
+  });
+  $("cancelSettings").addEventListener("click", () => show("Form"));
+  $("resetDefaults").addEventListener("click", () => {
+    $("setItems").value = DEFAULT_ITEMS.join("\n"); $("setPics").value = DEFAULT_PICS.join("\n"); $("setFloat").value = DEFAULT_FLOAT;
+    toast("Defaults loaded. Tap Save");
+  });
+  $("saveSettings").addEventListener("click", () => {
+    const clean = t => t.split("\n").map(s=>s.trim()).filter(Boolean);
+    const newItems = clean($("setItems").value), pics = clean($("setPics").value), fl = parseFloat($("setFloat").value);
+    const err = $("setErr");
+    const dup = a => a.find((x,i)=>a.indexOf(x)!==i);
+    if(!newItems.length || !pics.length){ err.textContent="Each list needs at least one entry."; err.classList.remove("hide"); return; }
+    if(isNaN(fl)){ err.textContent="Opening float must be a number."; err.classList.remove("hide"); return; }
+    if(dup(newItems) || dup(pics)){ err.textContent=`Duplicate entry: ${dup(newItems)||dup(pics)}`; err.classList.remove("hide"); return; }
+    // Keep progress on items whose wording didn't change
+    const old = {}; items.forEach((it,i)=> old[it.text] = { d: state.done[i], r: state.reason[i], a: state.amount[i] });
+    cfg = { items: newItems, pics, float: fl }; save(KEY_CFG, cfg);
+    items = newItems.map(parse);
+    state.done = items.map(it => old[it.text] ? old[it.text].d : false);
+    state.reason = items.map(it => old[it.text] ? old[it.text].r : "");
+    state.amount = items.map(it => old[it.text] ? old[it.text].a : "");
+    if(!pics.includes(state.pic)) state.pic = "";
+    persist(); render(); show("Form"); toast("Settings saved");
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
